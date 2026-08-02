@@ -1,0 +1,6 @@
+from systems.goals.base_goal import Goal
+
+class RecognitionGoal(Goal):
+    name = "Seek Recognition"
+    def score(self, agent):
+        return agent.needs.recognition

@@ -3,5 +3,6 @@ from dataclasses import dataclass
 @dataclass
 class Personality:
     kindness: float
-    greed: float
+    extroversion: float
+    ambition: float
     curiosity: float

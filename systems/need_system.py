@@ -1,4 +1,6 @@
+from agents.agent import Agent
 class NeedSystem:
 
-    def update(self, agent):
+    def update(self, agent: Agent):
+
         agent.needs.update()
