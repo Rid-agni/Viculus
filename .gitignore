@@ -1,0 +1,16 @@
+# Virtual Environment
+.venv/
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+# Environment Variables
+.env
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+# OS
+.DS_Store
+Thumbs.db
