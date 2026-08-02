@@ -6,3 +6,4 @@ class Personality:
     extroversion: float
     ambition: float
     curiosity: float
+    confidence: float
