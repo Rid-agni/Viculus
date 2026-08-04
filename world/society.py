@@ -45,24 +45,22 @@ class Society:
 
     def increase_friendship(self, a, b, amount):
         self.ensure_relationship(a, b)
-        self.graph[a.name][b.name]["friendship"] = min(
-        100,
-        self.graph[a.name][b.name]["friendship"] + amount
-    )
+        current = self.graph[a.name][b.name]["friendship"]
+        current += (10 - current) * amount
+        self.graph[a.name][b.name]["friendship"] = current
+    
 
 
     def increase_trust(self, a, b, amount):
         self.ensure_relationship(a, b)
-        self.graph[a.name][b.name]["trust"] = min(
-        100,
-        self.graph[a.name][b.name]["trust"] + amount
-    )
+        current = self.graph[a.name][b.name]["trust"]
+        current += (10 - current) * amount
+        self.graph[a.name][b.name]["trust"] = current
     def increase_respect(self, a, b, amount):
-        self.ensure_relationship(a, b)
-        self.graph[a.name][b.name]["respect"] = min(
-        100,
-        self.graph[a.name][b.name]["respect"] + amount
-    )
+      self.ensure_relationship(a, b)
+      current = self.graph[a.name][b.name]["respect"]
+      current += (10 - current) * amount
+      self.graph[a.name][b.name]["respect"] = current
     def decrease_friendship(self, a, b, amount):
       self.ensure_relationship(a, b)
 
@@ -86,3 +84,37 @@ class Society:
     )
     def has_relationship(self, a, b):
        return self.graph.has_edge(a.name, b.name)
+    def decay_relationships(self):
+      for _, _, data in self.graph.edges(data=True):
+        data["friendship"] = max(
+            0,
+            data["friendship"] - 0.02
+        )
+        data["trust"] = max(
+            0,
+            data["trust"] - 0.01
+        )
+        data["respect"] = max(
+            0,
+            data["respect"] - 0.005
+        )
+    def neighbors(self, agent):
+
+     return [
+        self.get_agent(name)
+        for name in self.graph.neighbors(agent.name)
+    ]
+    def strangers(self, agent):
+
+       known = set(self.graph.neighbors(agent.name))
+
+       return [
+
+        other
+
+        for other in self.agents()
+
+        if other.name != agent.name
+        and other.name not in known
+
+    ]

@@ -6,7 +6,8 @@ from data.starter_agents import create_starter_agents
 from world.society import Society
 from systems.interaction_system import InteractionSystem
 from systems.action_system import ActionSystem
-
+from systems.memory_system import MemorySystem
+memory_system = MemorySystem()
 action_system = ActionSystem()
 society = Society()
 interaction_system = InteractionSystem()
@@ -24,17 +25,21 @@ decision_system = DecisionSystem()
 for _ in range(20):
 
     print(clock.current_time())
-
+    for agent in society.agents():
+        agent.has_interacted = False
     for agent in society.agents():
 
         need_system.update(agent)
-
+        agent.update_cooldowns()
         decision_system.choose_goal(agent)
         if agent.current_goal.name == "Socialize":
 
-           interaction_system.interact(
+           result = interaction_system.interact(society, agent)
+           if result:
+             memory_system.add_memory(
         society,
-        agent
+        result,
+        clock.minute
     )
         else:
            action_system.perform(agent)
@@ -53,5 +58,11 @@ for _ in range(20):
 
      print(f"{a} <-> {b}")
      print(data)
+    memory_system.gossip(society)
     print("-"*70)
+    print("\nAlice's Memories")
+    for memory in memory_system.database.get_memories("Alice"):
+     print(memory)
+    print("-" * 70)
+    society.decay_relationships()
     clock.tick()
