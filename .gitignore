@@ -13,4 +13,7 @@ __pycache__/
 !.vscode/launch.json
 # OS
 .DS_Store
-Thumbs.db
+Thumbs.
+# SQLite databases
+*.db
+memory.db
