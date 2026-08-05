@@ -15,7 +15,9 @@ class Agent:
         self.current_goal = None
         self.current_target = None
         self.state = "Idle"
+        self.last_action = "Idle"
         self.has_interacted = False
+        self.social_fatigue = 0
         self.social_cooldowns = {}
     def can_talk_to(self, target):
       return self.social_cooldowns.get(target.name, 0) == 0 
@@ -28,4 +30,9 @@ class Agent:
         if self.social_cooldowns[person] > 0:
 
             self.social_cooldowns[person] -= 1
+    def recover_social_energy(self):
+     self.social_fatigue = max(
+        0,
+        self.social_fatigue - 2
+    )
     

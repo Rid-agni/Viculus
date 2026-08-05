@@ -4,6 +4,17 @@ class Society:
     def __init__(self):
 
         self.graph = nx.Graph()
+    def _bounded_increase(self, current, amount):
+     return min(
+        1.0,
+        current + amount * (1 - current)
+    )
+
+    def _bounded_decrease(self, current, amount):
+     return max(
+        0.0,
+        current - amount * current
+    )
     def add_agent(self, agent):
         self.graph.add_node(
             agent.name,
@@ -44,60 +55,58 @@ class Society:
         return self.graph[a.name][b.name]["respect"]
 
     def increase_friendship(self, a, b, amount):
-        self.ensure_relationship(a, b)
-        current = self.graph[a.name][b.name]["friendship"]
-        current += (10 - current) * amount
-        self.graph[a.name][b.name]["friendship"] = current
+     self.ensure_relationship(a, b)
+     current = self.graph[a.name][b.name]["friendship"]
+     self.graph[a.name][b.name]["friendship"] = (
+        self._bounded_increase(current, amount)
+    )
     
-
-
     def increase_trust(self, a, b, amount):
-        self.ensure_relationship(a, b)
-        current = self.graph[a.name][b.name]["trust"]
-        current += (10 - current) * amount
-        self.graph[a.name][b.name]["trust"] = current
+      self.ensure_relationship(a, b)
+      current = self.graph[a.name][b.name]["trust"]
+      self.graph[a.name][b.name]["trust"] = (
+        self._bounded_increase(current, amount)
+    )
     def increase_respect(self, a, b, amount):
-      self.ensure_relationship(a, b)
-      current = self.graph[a.name][b.name]["respect"]
-      current += (10 - current) * amount
-      self.graph[a.name][b.name]["respect"] = current
+     self.ensure_relationship(a, b)
+     current = self.graph[a.name][b.name]["respect"]
+     self.graph[a.name][b.name]["respect"] = (
+        self._bounded_increase(current, amount)
+    )
     def decrease_friendship(self, a, b, amount):
-      self.ensure_relationship(a, b)
-
-      self.graph[a.name][b.name]["friendship"] = max(
-        0,
-        self.graph[a.name][b.name]["friendship"] - amount
+     self.ensure_relationship(a, b)
+     current = self.graph[a.name][b.name]["friendship"]
+     self.graph[a.name][b.name]["friendship"] = (
+        self._bounded_decrease(current, amount)
     )
     def decrease_trust(self, a, b, amount):
-      self.ensure_relationship(a, b)
-
-      self.graph[a.name][b.name]["trust"] = max(
-        0,
-        self.graph[a.name][b.name]["trust"] - amount
+     self.ensure_relationship(a, b)
+     current = self.graph[a.name][b.name]["trust"]
+     self.graph[a.name][b.name]["trust"] = (
+        self._bounded_decrease(current, amount)
     )
     def decrease_respect(self, a, b, amount):
-      self.ensure_relationship(a, b)
-
-      self.graph[a.name][b.name]["respect"] = max(
-        0,
-        self.graph[a.name][b.name]["respect"] - amount
+     self.ensure_relationship(a, b)
+     current = self.graph[a.name][b.name]["respect"]
+     self.graph[a.name][b.name]["respect"] = (
+        self._bounded_decrease(current, amount)
     )
     def has_relationship(self, a, b):
        return self.graph.has_edge(a.name, b.name)
     def decay_relationships(self):
       for _, _, data in self.graph.edges(data=True):
-        data["friendship"] = max(
-            0,
-            data["friendship"] - 0.02
-        )
-        data["trust"] = max(
-            0,
-            data["trust"] - 0.01
-        )
-        data["respect"] = max(
-            0,
-            data["respect"] - 0.005
-        )
+        data["friendship"] = self._bounded_decrease(
+        data["friendship"],
+    0.02
+)
+        data["trust"] = self._bounded_decrease(
+    data["trust"],
+    0.01
+)
+        data["respect"] = self._bounded_decrease(
+    data["respect"],
+    0.005
+)
     def neighbors(self, agent):
 
      return [
@@ -105,16 +114,10 @@ class Society:
         for name in self.graph.neighbors(agent.name)
     ]
     def strangers(self, agent):
-
        known = set(self.graph.neighbors(agent.name))
-
        return [
-
         other
-
         for other in self.agents()
-
         if other.name != agent.name
         and other.name not in known
-
     ]

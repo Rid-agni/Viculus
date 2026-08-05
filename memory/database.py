@@ -22,11 +22,86 @@ confidence REAL,
     )
     """)
      self.connection.commit()
-    def add_memory(self,owner, other,interaction_type,description,importance,source, confidence,timestamp):
+    def add_memory(
+    self,
+    owner,
+    other,
+    interaction_type,
+    description,
+    importance,
+    source,
+    confidence,
+    timestamp
+):
+     existing = self.cursor.execute(
+        """
+        SELECT id, importance
+        FROM memories
+        WHERE owner=?
+        AND other_agent=?
+        AND interaction_type=?
+        AND source=?
+        """,
+        (
+            owner,
+            other,
+            interaction_type,
+            source
+        )
+    ).fetchone()
+
+     if existing:
+        memory_id, old_importance = existing
+
+        self.cursor.execute(
+            """
+            UPDATE memories
+            SET importance=?,
+                confidence=?,
+                timestamp=?
+            WHERE id=?
+            """,
+            (
+                min(old_importance + 0.5, 5),
+                confidence,
+                timestamp,
+                memory_id
+            )
+        )
+
+     else:
+
+        self.cursor.execute(
+            """
+            INSERT INTO memories(
+                owner,
+                other_agent,
+                interaction_type,
+                description,
+                importance,
+                source,
+                confidence,
+                timestamp
+            )
+            VALUES(?,?,?,?,?,?,?,?)
+            """,
+            (
+                owner,
+                other,
+                interaction_type,
+                description,
+                importance,
+                source,
+                confidence,
+                timestamp
+            )
+        )
+
+     self.connection.commit()
+    def get_memories(self, owner):
      self.cursor.execute(
         """
-        INSERT INTO memories(
-            owner,
+        SELECT
             other_agent,
             interaction_type,
             description,
@@ -34,27 +109,6 @@ confidence REAL,
             source,
             confidence,
             timestamp
-        )
-        VALUES(?,?,?,?,?,?,?,?)
-        """,
-        (
-            owner,
-            other,
-            interaction_type,
-            description,
-            importance,
-            source,
-            confidence,
-            timestamp
-        )
-
-    )
-
-     self.connection.commit()
-    def get_memories(self,owner):
-     self.cursor.execute(
-        """
-        SELECT *
         FROM memories
         WHERE owner=?
         ORDER BY timestamp DESC
@@ -70,12 +124,15 @@ confidence REAL,
 ):
      self.cursor.execute(
         """
-        SELECT interaction_type
-        FROM memories
-        WHERE owner=?
-        AND other_agent=?
-        ORDER BY timestamp DESC
-        LIMIT ?
+      SELECT
+    interaction_type,
+    description,
+    importance
+FROM memories
+WHERE owner=?
+AND other_agent=?
+ORDER BY timestamp DESC
+LIMIT ?
         """,
         (
             owner,
@@ -83,11 +140,13 @@ confidence REAL,
             limit
         )
     )
+
      return self.cursor.fetchall()
     def get_recent_memories(self, owner, limit=5):
      self.cursor.execute(
         """
-        SELECT interaction_type,
+        SELECT other_agent,
+        interaction_type,
                description,
                importance,
                source,

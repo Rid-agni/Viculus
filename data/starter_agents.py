@@ -15,11 +15,11 @@ def create_starter_agents():
     alice.needs.recognition = 20
     alice.needs.energy = 95
     bob = Agent("Bob", "Engineer",Personality(
-        kindness=0.4,
-        extroversion=0.2,
-        ambition=0.9,
-        curiosity=0.5,
-        confidence=0.9
+        kindness=0.05,
+        extroversion=0.30,
+        ambition=1.00,
+        curiosity=0.30,
+        confidence=1.00
     ))
     bob.needs.energy = 77
     bob.needs.curiosity = 35
@@ -37,11 +37,11 @@ def create_starter_agents():
     charlie.needs.belonging = 40
     charlie.needs.recognition = 25
     diana = Agent("Diana", "Researcher", Personality(
-        kindness=0.8,
+        kindness=0.2,
         extroversion=0.4,
-        ambition=0.8,
-        curiosity=0.8,
-        confidence=0.5
+        ambition=0.9,
+        curiosity=1.0,
+        confidence=0.6
     ))
     diana.needs.curiosity = 95
     diana.needs.energy = 95
@@ -52,7 +52,7 @@ def create_starter_agents():
         extroversion=0.7,
         ambition=0.4,
         curiosity=0.95,
-        confidence=0.7
+        confidence=0.5
     ))
     ethan.needs.belonging = 20
     ethan.needs.recognition = 85
